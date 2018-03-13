@@ -21,6 +21,18 @@ defmodule RefranerBot.Utils do
     end
   end
 
+  def generate_rating_row(refran_id) do
+    refran_id = id_to_string(refran_id)
+
+    [
+      [text: "😡️", callback_data: "rate_refran:1:" <> refran_id],
+      [text: "☹", callback_data: "rate_refran:2:" <> refran_id],
+      [text: "🙃", callback_data: "rate_refran:3:" <> refran_id],
+      [text: "😄", callback_data: "rate_refran:4:" <> refran_id],
+      [text: "😍️", callback_data: "rate_refran:5:" <> refran_id]
+    ]
+  end
+
   defp pretty_refran_info([{"significado", significado} | rest], string) do
     pretty_refran_info(rest, string <> "*Significado:* #{significado}\n")
   end
@@ -47,6 +59,7 @@ defmodule RefranerBot.Utils do
 
   def generate(refran_id, raw_buttons) do
     refran_id = id_to_string(refran_id)
+
     buttons = Enum.map(raw_buttons, fn raw_button -> get_button(refran_id, raw_button) end)
 
     Telex.Dsl.create_inline(buttons)
@@ -55,8 +68,7 @@ defmodule RefranerBot.Utils do
   defp get_button(refran_id, :hide),
     do: [[text: "Hide info", callback_data: "action:hide_refran_info:" <> refran_id]]
 
-  defp get_button(refran_id, :rate),
-    do: [[text: "Rate", callback_data: "action:rate:" <> refran_id]]
+  defp get_button(refran_id, :rate), do: generate_rating_row(refran_id)
 
   defp get_button(refran_id, :show),
     do: [[text: "Show info", callback_data: "action:show_refran_info:" <> refran_id]]
