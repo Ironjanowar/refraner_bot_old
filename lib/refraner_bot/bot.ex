@@ -6,6 +6,8 @@ defmodule RefranerBot.Bot do
   use Telex.Bot, name: @botname
   use Telex.Dsl
 
+  require Logger
+
   def handle({:command, "start", _msg}, _name, _) do
     answer("Hi!")
   end
@@ -13,6 +15,8 @@ defmodule RefranerBot.Bot do
   def handle({:command, "refran", _msg}, _name, _) do
     full_refran = Refraner.get_refran()
     {id, refran_text} = RefranerBot.Utils.pretty_refran(full_refran)
+
+    Logger.info("Sending refran [#{id}] -> #{Map.get(full_refran, "refran")}")
 
     buttons =
       case RefranerBot.Utils.check_info(full_refran) do
