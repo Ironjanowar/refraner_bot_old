@@ -2,6 +2,10 @@
 # and its dependencies with the aid of the Mix.Config module.
 use Mix.Config
 
-config :refraner_bot,
-  token: {:system, "BOT_TOKEN"},
-  path_to_refranes: {:system, "PATH_TO_REFRANES"}
+config :refraner, Refraner.Repo,
+  adapter: Sqlite.Ecto2,
+  database: "deps/refraner/refraner.db"
+
+config :refraner, ecto_repos: [Refraner.Repo]
+
+config :refraner_bot, token: {:system, "BOT_TOKEN"}

@@ -1,11 +1,11 @@
 defmodule RefranerBot.Utils do
-  def pretty_refran(%{"refran" => refran, "id" => id}) do
+  def pretty_refran(%{refran: refran, id: id}) do
     # TODO: check if refran is nil
     {id, "📜 _#{refran}_ 📜"}
   end
 
   def pretty_refran_info(refran) do
-    text = Map.get(refran, "refran")
+    text = Map.get(refran, :refran)
     refran_text = "📜 _#{text}_ 📜\n\n"
     Map.to_list(refran) |> filter_null_params() |> pretty_refran_info(refran_text)
   end
@@ -25,27 +25,27 @@ defmodule RefranerBot.Utils do
     refran_id = id_to_string(refran_id)
 
     [
-      [text: "😡️", callback_data: "rate_refran:1:" <> refran_id],
+      [text: "😡", callback_data: "rate_refran:1:" <> refran_id],
       [text: "☹", callback_data: "rate_refran:2:" <> refran_id],
       [text: "🙃", callback_data: "rate_refran:3:" <> refran_id],
       [text: "😄", callback_data: "rate_refran:4:" <> refran_id],
-      [text: "😍️", callback_data: "rate_refran:5:" <> refran_id]
+      [text: "😍", callback_data: "rate_refran:5:" <> refran_id]
     ]
   end
 
-  defp pretty_refran_info([{"significado", significado} | rest], string) do
+  defp pretty_refran_info([{:significado, significado} | rest], string) do
     pretty_refran_info(rest, string <> "*Significado:* #{significado}\n")
   end
 
-  defp pretty_refran_info([{"ideas_clave", ideas_clave} | rest], string) do
+  defp pretty_refran_info([{:ideas_clave, ideas_clave} | rest], string) do
     pretty_refran_info(rest, string <> "*Ideas clave:* #{ideas_clave}\n")
   end
 
-  defp pretty_refran_info([{"tipo", tipo} | rest], string) do
+  defp pretty_refran_info([{:tipo, tipo} | rest], string) do
     pretty_refran_info(rest, string <> "*Tipo:* #{tipo}\n")
   end
 
-  defp pretty_refran_info([{"marcador_de_uso", marcador_de_uso} | rest], string) do
+  defp pretty_refran_info([{:marcador_de_uso, marcador_de_uso} | rest], string) do
     pretty_refran_info(rest, string <> "*Marcador de uso:* #{marcador_de_uso}\n")
   end
 

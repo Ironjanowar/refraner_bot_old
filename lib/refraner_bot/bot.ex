@@ -13,7 +13,7 @@ defmodule RefranerBot.Bot do
   end
 
   def handle({:command, "refran", _msg}, _name, _) do
-    full_refran = Refraner.get_refran()
+    full_refran = Refraner.get_random_refran()
     {id, refran_text} = RefranerBot.Utils.pretty_refran(full_refran)
 
     Logger.info("Sending refran [#{id}] -> #{Map.get(full_refran, "refran")}")
@@ -44,5 +44,12 @@ defmodule RefranerBot.Bot do
       end
 
     edit(:inline, refran_text, parse_mode: "Markdown", reply_markup: buttons)
+  end
+
+  def handle({:callback_query, %{data: "rate_refran:" <> data}}, _name, _extra) do
+    [rate, id] = String.split(data, ":")
+    rate = String.to_integer(rate)
+    id = String.to_integer(id)
+    Refraner.add_rating(id, rate)
   end
 end

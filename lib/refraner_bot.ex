@@ -7,12 +7,10 @@ defmodule RefranerBot do
 
   def start(_type, _args) do
     token = Telex.Config.get(:refraner_bot, :token)
-    path_to_refranes = Telex.Config.get(:refraner_bot, :path_to_refranes)
 
     children = [
       supervisor(Telex, []),
-      supervisor(RefranerBot.Bot, [:polling, token]),
-      worker(Refraner, [path_to_refranes])
+      supervisor(RefranerBot.Bot, [:polling, token])
     ]
 
     opts = [strategy: :one_for_one, name: RefranerBot]
