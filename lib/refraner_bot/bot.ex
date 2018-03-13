@@ -11,8 +11,15 @@ defmodule RefranerBot.Bot do
   end
 
   def handle({:command, "refran", _msg}, _name, _) do
-    {id, refran_text} = Refraner.get_refran() |> RefranerBot.Utils.pretty_refran()
-    buttons = RefranerBot.Utils.generate(id, [:show, :rate])
+    full_refran = Refraner.get_refran()
+    {id, refran_text} = RefranerBot.Utils.pretty_refran(full_refran)
+
+    buttons =
+      case RefranerBot.Utils.check_info(full_refran) do
+        :ok_info -> RefranerBot.Utils.generate(id, [:show, :rate])
+        :no_info -> RefranerBot.Utils.generate(id, [:rate])
+      end
+
     answer(refran_text, parse_mode: "Markdown", reply_markup: buttons)
   end
 
@@ -23,8 +30,15 @@ defmodule RefranerBot.Bot do
   end
 
   def handle({:callback_query, %{data: "action:hide_refran_info:" <> id}}, _name, _extra) do
-    {_id, refran_text} = Refraner.get_refran_by_id(id) |> RefranerBot.Utils.pretty_refran()
-    buttons = RefranerBot.Utils.generate(id, [:show, :rate])
+    full_refran = Refraner.get_refran_by_id(id)
+    {_id, refran_text} = RefranerBot.Utils.pretty_refran(full_refran)
+
+    buttons =
+      case RefranerBot.Utils.check_info(full_refran) do
+        :ok_info -> RefranerBot.Utils.generate(id, [:show, :rate])
+        :no_info -> RefranerBot.Utils.generate(id, [:rate])
+      end
+
     edit(:inline, refran_text, parse_mode: "Markdown", reply_markup: buttons)
   end
 end

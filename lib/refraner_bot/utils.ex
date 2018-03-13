@@ -1,15 +1,24 @@
 defmodule RefranerBot.Utils do
   def pretty_refran(%{"refran" => refran, "id" => id}) do
-    # TODO: answers with text and icons and the id of refran
-    {id, "📜_#{refran}_📜"}
+    # TODO: check if refran is nil
+    {id, "📜 _#{refran}_ 📜"}
   end
 
   def pretty_refran_info(refran) do
-    Map.to_list(refran) |> pretty_refran_info("")
+    text = Map.get(refran, "refran")
+    refran_text = "📜 _#{text}_ 📜\n\n"
+    Map.to_list(refran) |> filter_null_params() |> pretty_refran_info(refran_text)
   end
 
-  defp pretty_refran_info([{"refran", refran} | rest], string) do
-    pretty_refran_info(rest, string <> "*Refran:* #{refran}\n")
+  defp filter_null_params(list) do
+    Enum.filter(list, fn {_, v} -> v != nil end)
+  end
+
+  def check_info(refran) do
+    case refran |> Map.to_list() |> filter_null_params do
+      [] -> :no_info
+      _ -> :ok_info
+    end
   end
 
   defp pretty_refran_info([{"significado", significado} | rest], string) do
