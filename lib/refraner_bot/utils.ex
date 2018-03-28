@@ -1,14 +1,5 @@
 defmodule RefranerBot.Utils do
-  def pretty_refran(%{refran: refran, id: id}) do
-    # TODO: check if refran is nil
-    {id, "📜 _#{refran}_ 📜"}
-  end
-
-  def pretty_refran_info(refran) do
-    text = Map.get(refran, :refran)
-    refran_text = "📜 _#{text}_ 📜\n\n"
-    Map.to_list(refran) |> filter_null_params() |> pretty_refran_info(refran_text)
-  end
+  def pretty_refran(%{refran: refran, id: id}), do: "📜 _#{refran}_ 📜"
 
   defp filter_null_params(list) do
     Enum.filter(list, fn {_, v} -> v != nil end)
@@ -33,20 +24,28 @@ defmodule RefranerBot.Utils do
     ]
   end
 
-  defp pretty_refran_info([{:significado, significado} | rest], string) do
-    pretty_refran_info(rest, string <> "*Significado:* #{significado}\n")
+  defp format_key(key) when is_atom(key), do: key |> Atom.to_string()
+
+  defp format_key(key) when is_binary(key) do
+    key
+    |> String.split("_")
+    |> Enum.map(&String.capitalize/1)
+    |> Enum.join(" ")
   end
 
-  defp pretty_refran_info([{:ideas_clave, ideas_clave} | rest], string) do
-    pretty_refran_info(rest, string <> "*Ideas clave:* #{ideas_clave}\n")
+  def pretty_refran_info(refran) do
+    text = Map.get(refran, :refran)
+    refran_text = "📜 _#{text}_ 📜\n\n"
+    Map.to_list(refran) |> filter_null_params() |> pretty_refran_info(refran_text)
   end
 
-  defp pretty_refran_info([{:tipo, tipo} | rest], string) do
-    pretty_refran_info(rest, string <> "*Tipo:* #{tipo}\n")
+  defp pretty_refran_info([{_, nil} | rest], string) do
+    pretty_refran_info(rest, string)
   end
 
-  defp pretty_refran_info([{:marcador_de_uso, marcador_de_uso} | rest], string) do
-    pretty_refran_info(rest, string <> "*Marcador de uso:* #{marcador_de_uso}\n")
+  defp pretty_refran_info([{key, info} | rest], string) do
+    formatted_key = format_key(key)
+    pretty_refran_info(rest, string <> "*#{formatted_key}:* #{info}\n")
   end
 
   defp pretty_refran_info([_ | rest], string) do
