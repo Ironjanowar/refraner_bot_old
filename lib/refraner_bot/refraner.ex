@@ -28,10 +28,17 @@ defmodule Refraner do
   end
 
   def add_vote(tg_user_id, refran_id, vote) do
+    full_vote = %{tg_user_id: tg_user_id, vote: vote, refran_id: refran_id}
     req_body = %{tg_user_id: tg_user_id, vote: vote} |> Poison.encode!()
+    headers = [{"Content-Type", "application/json"}]
 
-    case HTTPoison.post(@refraner_server <> "/api/refran/#{refran_id}/vote", req_body) do
-      # TODO
+    case HTTPoison.post(@refraner_server <> "/api/refran/#{refran_id}/vote", req_body, headers) do
+      {:ok, %{status_code: 201}} ->
+        {:ok, %{tg_user_id: tg_user_id, vote: vote, refran_id: refran_id}}
+
+      err ->
+        Logger.error("Error trying to vote with #{inspect(full_vote)}")
+        err
     end
   end
 end
