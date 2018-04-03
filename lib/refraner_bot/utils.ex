@@ -32,6 +32,11 @@ defmodule RefranerBot.Utils do
     pretty_refran_info(rest, string)
   end
 
+  # Skip id
+  defp pretty_refran_info([{"id", _} | rest], string) do
+    pretty_refran_info(rest, string)
+  end
+
   defp pretty_refran_info([{key, info} | rest], string) do
     formatted_key = format_key(key)
     pretty_refran_info(rest, string <> "*#{formatted_key}:* #{info}\n")
