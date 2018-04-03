@@ -1,5 +1,6 @@
 defmodule RefranerBot.Utils do
-  def pretty_refran(%{refran: refran, id: id}), do: "📜 _#{refran}_ 📜"
+  def pretty_refran(%{"refran" => refran}), do: %{refran: refran} |> pretty_refran
+  def pretty_refran(%{refran: refran}), do: "📜 _#{refran}_ 📜"
 
   defp filter_null_params(list) do
     Enum.filter(list, fn {_, v} -> v != nil end)
@@ -12,18 +13,6 @@ defmodule RefranerBot.Utils do
     end
   end
 
-  def generate_rating_row(refran_id) do
-    refran_id = id_to_string(refran_id)
-
-    [
-      [text: "😡", callback_data: "rate_refran:1:" <> refran_id],
-      [text: "☹", callback_data: "rate_refran:2:" <> refran_id],
-      [text: "🙃", callback_data: "rate_refran:3:" <> refran_id],
-      [text: "😄", callback_data: "rate_refran:4:" <> refran_id],
-      [text: "😍", callback_data: "rate_refran:5:" <> refran_id]
-    ]
-  end
-
   defp format_key(key) when is_atom(key), do: key |> Atom.to_string()
 
   defp format_key(key) when is_binary(key) do
@@ -34,7 +23,7 @@ defmodule RefranerBot.Utils do
   end
 
   def pretty_refran_info(refran) do
-    text = Map.get(refran, :refran)
+    text = Map.get(refran, "refran")
     refran_text = "📜 _#{text}_ 📜\n\n"
     Map.to_list(refran) |> filter_null_params() |> pretty_refran_info(refran_text)
   end
@@ -54,6 +43,18 @@ defmodule RefranerBot.Utils do
 
   defp pretty_refran_info([], string) do
     string
+  end
+
+  def generate_rating_row(refran_id) do
+    refran_id = id_to_string(refran_id)
+
+    [
+      [text: "😡", callback_data: "rate_refran:1:" <> refran_id],
+      [text: "☹", callback_data: "rate_refran:2:" <> refran_id],
+      [text: "🙃", callback_data: "rate_refran:3:" <> refran_id],
+      [text: "😄", callback_data: "rate_refran:4:" <> refran_id],
+      [text: "😍", callback_data: "rate_refran:5:" <> refran_id]
+    ]
   end
 
   def generate(refran_id, raw_buttons) do

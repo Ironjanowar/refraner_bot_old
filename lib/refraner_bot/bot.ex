@@ -13,7 +13,7 @@ defmodule RefranerBot.Bot do
   end
 
   def handle({:command, "refran", %{from: %{id: user_id, first_name: first_name}}}, _name, _) do
-    {:ok, %{id: refran_id}} = {:ok, full_refran} = Refraner.get_random_refran()
+    {:ok, %{"id" => refran_id} = full_refran} = Refraner.get_random_refran()
     refran_text = RefranerBot.Utils.pretty_refran(full_refran)
 
     Logger.info("Sending refran #{refran_id} to #{first_name} [#{user_id}]")
@@ -24,20 +24,16 @@ defmodule RefranerBot.Bot do
   end
 
   def handle({:callback_query, %{data: "action:show_refran_info:" <> id}}, _name, _extra) do
-    refran = Refraner.get_refran_by_id(id) |> RefranerBot.Utils.pretty_refran_info()
+    {:ok, full_refran} = Refraner.get_refran_by_id(id)
+    refran = RefranerBot.Utils.pretty_refran_info(full_refran)
     buttons = RefranerBot.Utils.generate(id, [:hide, :rate])
     edit(:inline, refran, parse_mode: "Markdown", reply_markup: buttons)
   end
 
   def handle({:callback_query, %{data: "action:hide_refran_info:" <> id}}, _name, _extra) do
-    full_refran = Refraner.get_refran_by_id(id)
-    {_id, refran_text} = RefranerBot.Utils.pretty_refran(full_refran)
-
-    buttons =
-      case RefranerBot.Utils.check_info(full_refran) do
-        :ok_info -> RefranerBot.Utils.generate(id, [:show, :rate])
-        :no_info -> RefranerBot.Utils.generate(id, [:rate])
-      end
+    {:ok, full_refran} = Refraner.get_refran_by_id(id)
+    refran_text = RefranerBot.Utils.pretty_refran(full_refran)
+    buttons = RefranerBot.Utils.generate(id, [:show, :rate])
 
     edit(:inline, refran_text, parse_mode: "Markdown", reply_markup: buttons)
   end
@@ -48,8 +44,9 @@ defmodule RefranerBot.Bot do
         _extra
       ) do
     [rate, id] = String.split(data, ":")
-    rate = String.to_integer(rate)
-    id = String.to_integer(id)
+
+    Logger.info("User #{user_id} rated refran #{id} with #{rate}")
+
     Refraner.add_vote(user_id, id, rate)
   end
 end
