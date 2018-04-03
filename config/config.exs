@@ -5,4 +5,5 @@ use Mix.Config
 config :refraner_bot,
   token: {:system, "BOT_TOKEN"},
   # Refraner Server should include host and port
-  refraner_server_endpoint: {:system, "REFRANER_SERVER"}
+  refraner_server_host: {:system, "REFRANER_SERVER_HOST"},
+  refraner_server_port: {:system, "REFRANER_SERVER_PORT"}
