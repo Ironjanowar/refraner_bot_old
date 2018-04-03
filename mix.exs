@@ -24,7 +24,8 @@ defmodule RefranerBot.MixProject do
     [
       {:telex, git: "https://github.com/rockneurotiko/telex.git", tag: "0.4.0"},
       {:sqlite_ecto2, "~> 2.2"},
-      {:refraner, git: "https://github.com/Ironjanowar/refraner.git"}
+      {:tesla, "1.0.0-beta.1"},
+      {:jason, ">= 1.0.0"}
     ]
   end
 end

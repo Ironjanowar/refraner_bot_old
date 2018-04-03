@@ -12,17 +12,13 @@ defmodule RefranerBot.Bot do
     answer("Hi!")
   end
 
-  def handle({:command, "refran", _msg}, _name, _) do
-    full_refran = Refraner.get_random_refran()
-    {id, refran_text} = RefranerBot.Utils.pretty_refran(full_refran)
+  def handle({:command, "refran", %{from: %{id: user_id, first_name: first_name}}}, _name, _) do
+    {:ok, %{id: refran_id}} = {:ok, full_refran} = Refraner.get_random_refran()
+    refran_text = RefranerBot.Utils.pretty_refran(full_refran)
 
-    Logger.info("Sending refran [#{id}] -> #{Map.get(full_refran, "refran")}")
+    Logger.info("Sending refran #{refran_id} to #{first_name} [#{user_id}]")
 
-    buttons =
-      case RefranerBot.Utils.check_info(full_refran) do
-        :ok_info -> RefranerBot.Utils.generate(id, [:show, :rate])
-        :no_info -> RefranerBot.Utils.generate(id, [:rate])
-      end
+    buttons = RefranerBot.Utils.generate(refran_id, [:show, :rate])
 
     answer(refran_text, parse_mode: "Markdown", reply_markup: buttons)
   end
@@ -46,10 +42,14 @@ defmodule RefranerBot.Bot do
     edit(:inline, refran_text, parse_mode: "Markdown", reply_markup: buttons)
   end
 
-  def handle({:callback_query, %{data: "rate_refran:" <> data}}, _name, _extra) do
+  def handle(
+        {:callback_query, %{data: "rate_refran:" <> data, from: %{id: user_id}}},
+        _name,
+        _extra
+      ) do
     [rate, id] = String.split(data, ":")
     rate = String.to_integer(rate)
     id = String.to_integer(id)
-    Refraner.add_rating(id, rate)
+    Refraner.add_vote(user_id, id, rate)
   end
 end
