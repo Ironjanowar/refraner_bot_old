@@ -18,28 +18,37 @@ defmodule RefranerBot.Bot do
 
     Logger.info("Sending refran #{refran_id} to #{first_name} [#{user_id}]")
 
-    buttons = RefranerBot.Utils.generate(refran_id, [:show, :rate])
+    buttons = RefranerBot.Utils.generate(refran_id, [:show, :rate], %{user_id: user_id})
 
     answer(refran_text, parse_mode: "Markdown", reply_markup: buttons)
   end
 
-  def handle({:callback_query, %{data: "action:show_refran_info:" <> id}}, _name, _extra) do
+  def handle(
+        {:callback_query, %{data: "action:show_refran_info:" <> id, from: %{id: user_id}}},
+        _name,
+        _extra
+      ) do
     {:ok, full_refran} = Refraner.get_refran_by_id(id)
     refran = RefranerBot.Utils.pretty_refran_info(full_refran)
-    buttons = RefranerBot.Utils.generate(id, [:hide, :rate])
+    buttons = RefranerBot.Utils.generate(id, [:hide, :rate], %{user_id: user_id})
     edit(:inline, refran, parse_mode: "Markdown", reply_markup: buttons)
   end
 
-  def handle({:callback_query, %{data: "action:hide_refran_info:" <> id}}, _name, _extra) do
+  def handle(
+        {:callback_query, %{data: "action:hide_refran_info:" <> id, from: %{id: user_id}}},
+        _name,
+        _extra
+      ) do
     {:ok, full_refran} = Refraner.get_refran_by_id(id)
     refran_text = RefranerBot.Utils.pretty_refran(full_refran)
-    buttons = RefranerBot.Utils.generate(id, [:show, :rate])
+    buttons = RefranerBot.Utils.generate(id, [:show, :rate], %{user_id: user_id})
 
     edit(:inline, refran_text, parse_mode: "Markdown", reply_markup: buttons)
   end
 
   def handle(
-        {:callback_query, %{data: "rate_refran:" <> data, from: %{id: user_id}}},
+        {:callback_query,
+         %{data: "rate_refran:" <> data, from: %{id: user_id}, message: %{text: message_text}}},
         _name,
         _extra
       ) do
@@ -48,5 +57,7 @@ defmodule RefranerBot.Bot do
     Logger.info("User #{user_id} rated refran #{id} with #{rate}")
 
     Refraner.add_vote(user_id, id, rate)
+    buttons = RefranerBot.Utils.generate(id, [:show, :rate], %{user_id: user_id})
+    edit(:inline, message_text, parse_mode: "Markdown", reply_markup: buttons)
   end
 end

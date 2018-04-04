@@ -51,6 +51,10 @@ defmodule Refraner do
       {:ok, %{status: 200, body: vote}} ->
         {:ok, vote}
 
+      {:ok, %{status: 404, body: err}} ->
+        Logger.error(err)
+        {:error, {:not_found, err}}
+
       err ->
         Logger.error("Error trying to get vote from user #{user_id} for refran #{refran_id}")
         err
