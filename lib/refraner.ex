@@ -26,8 +26,11 @@ defmodule Refraner do
       {:ok, %{body: refran, status: 200}} ->
         {:ok, refran}
 
+      {:ok, %{body: %{"error_code" => 404, "message" => error_message}} = err} ->
+        error_message |> Logger.error()
+        {:error, err}
+
       err ->
-        Logger.error("Error trying to get refran ID #{refran_id}")
         err
     end
   end
@@ -40,6 +43,10 @@ defmodule Refraner do
       {:ok, %{status: 201}} ->
         {:ok, full_vote}
 
+      {:ok, %{body: %{"error_code" => _, "message" => error_message}} = err} ->
+        error_message |> Logger.error()
+        {:error, err}
+
       err ->
         Logger.error("Error trying to vote with #{inspect(full_vote)}")
         err
@@ -51,9 +58,9 @@ defmodule Refraner do
       {:ok, %{status: 200, body: vote}} ->
         {:ok, vote}
 
-      {:ok, %{status: 404, body: err}} ->
-        Logger.error(err)
-        {:error, {:not_found, err}}
+      {:ok, %{body: %{"error_code" => _, "message" => error_message}} = err} ->
+        error_message |> Logger.error()
+        {:error, err}
 
       err ->
         Logger.error("Error trying to get vote from user #{user_id} for refran #{refran_id}")
