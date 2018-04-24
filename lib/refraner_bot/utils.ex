@@ -55,26 +55,8 @@ defmodule RefranerBot.Utils do
   def generate_rating_row(refran_id, user_id) do
     refran_id = id_to_string(refran_id)
 
-    case Refraner.get_user_vote(user_id, refran_id) do
-      {:ok, %{"vote" => vote}} ->
-        refran_id |> basic_rate_keyboard |> (&mark_user_vote(&1, vote)).()
-
-      _ ->
-        Logger.info("Generating basic rate keyboard for user #{user_id} and refran #{refran_id}")
-        basic_rate_keyboard(refran_id)
-    end
-  end
-
-  defp mark_user_vote(keyboard, user_vote) when is_integer(user_vote),
-    do: Integer.to_string(user_vote) |> (&mark_user_vote(keyboard, &1)).()
-
-  defp mark_user_vote(keyboard, user_vote) do
-    Enum.map(keyboard, fn [text: text, callback_data: callback_data] = button ->
-      case callback_data |> String.split(":") do
-        [_, ^user_vote | _] -> [text: "* " <> text, callback_data: callback_data]
-        _ -> button
-      end
-    end)
+    Logger.info("Generating basic rate keyboard for user #{user_id} and refran #{refran_id}")
+    basic_rate_keyboard(refran_id)
   end
 
   defp basic_rate_keyboard(refran_id) do
