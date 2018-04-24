@@ -48,7 +48,12 @@ defmodule RefranerBot.Bot do
 
   def handle(
         {:callback_query,
-         %{data: "rate_refran:" <> data, from: %{id: user_id}, message: %{text: message_text}}},
+         %{
+           id: cb_id,
+           data: "rate_refran:" <> data,
+           from: %{id: user_id},
+           message: %{text: message_text}
+         }},
         _name,
         _extra
       ) do
@@ -57,7 +62,7 @@ defmodule RefranerBot.Bot do
     Logger.info("User #{user_id} rated refran #{id} with #{rate}")
 
     Refraner.add_vote(user_id, id, rate)
-    buttons = RefranerBot.Utils.generate(id, [:show, :rate], %{user_id: user_id})
-    edit(:inline, message_text, parse_mode: "Markdown", reply_markup: buttons)
+
+    answer_callback(cb_id, text: "You voted #{rate}!")
   end
 end
