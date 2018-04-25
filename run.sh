@@ -14,7 +14,7 @@ if [ $? != 0 ]; then
     exit 1
 fi
 
-if [ $1 == "iex" ]; then
+if [ $# -gt 0 ] && [ $1 == "iex" ]; then
     echo "Running with IEX..."
     iex -S mix
 else
