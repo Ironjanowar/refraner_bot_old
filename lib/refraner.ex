@@ -1,10 +1,10 @@
 defmodule Refraner do
   use Tesla
 
-  @host Telex.Config.get(:refraner_bot, :refraner_server_host, "http://localhost")
+  @host Telex.Config.get(:refraner_bot, :refraner_server_host, "localhost")
   @port Telex.Config.get(:refraner_bot, :refraner_server_port, "4000")
 
-  plug(Tesla.Middleware.BaseUrl, @host <> ":" <> @port)
+  plug(Tesla.Middleware.BaseUrl, "http://" <> @host <> ":" <> @port)
   plug(Tesla.Middleware.Headers, [{"Content-Type", "application/json"}])
   plug(Tesla.Middleware.JSON)
 
