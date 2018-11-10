@@ -1,0 +1,12 @@
+[Unit]
+Description=Refraner bot
+After=network.target
+
+[Service]
+WorkingDirectory=/opt/refraner_bot
+ExecStart=make run
+User=www-data
+Group=www-data
+
+[Install]
+WantedBy=multi-user.target
