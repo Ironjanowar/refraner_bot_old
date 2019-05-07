@@ -6,4 +6,5 @@ config :refraner_bot,
   token: {:system, "BOT_TOKEN"},
   # Refraner Server should include host and port
   refraner_server_host: {:system, "REFRANER_SERVER_HOST"},
-  refraner_server_port: {:system, "REFRANER_SERVER_PORT"}
+  refraner_server_port: {:system, "REFRANER_SERVER_PORT"},
+  default_language: {:system, "DEFAULT_LANGUAGE"}

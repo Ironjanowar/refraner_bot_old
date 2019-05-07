@@ -11,7 +11,13 @@ defmodule Refraner do
   require Logger
 
   def get_random_refran() do
-    case get("/api/refran/random") do
+    options =
+      case Telex.Config.get(:refraner_bot, :default_language) do
+        nil -> []
+        language -> [query: [language: language]]
+      end
+
+    case get("/api/refran/random", options) do
       {:ok, %{body: refran, status: 200}} ->
         {:ok, refran}
 
