@@ -1,16 +1,14 @@
 defmodule RefranerBot do
   use Application
 
-  import Supervisor.Spec
-
   require Logger
 
   def start(_type, _args) do
-    token = Telex.Config.get(:refraner_bot, :token)
+    token = ExGram.Config.get(:ex_gram, :token)
 
     children = [
-      supervisor(Telex, []),
-      supervisor(RefranerBot.Bot, [:polling, token])
+      ExGram,
+      {RefranerBot.Bot, [method: :polling, token: token]}
     ]
 
     opts = [strategy: :one_for_one, name: RefranerBot]

@@ -1,8 +1,8 @@
 defmodule Refraner do
   use Tesla
 
-  defp host, do: Telex.Config.get(:refraner_bot, :refraner_server_host, "localhost")
-  defp port, do: Telex.Config.get(:refraner_bot, :refraner_server_port, "4000")
+  defp host, do: ExGram.Config.get(:refraner_bot, :refraner_server_host, "localhost")
+  defp port, do: ExGram.Config.get(:refraner_bot, :refraner_server_port, "4000")
 
   plug(Tesla.Middleware.BaseUrl, "http://#{host()}:#{port()}")
   plug(Tesla.Middleware.Headers, [{"Content-Type", "application/json"}])
@@ -12,7 +12,7 @@ defmodule Refraner do
 
   def get_random_refran() do
     options =
-      case Telex.Config.get(:refraner_bot, :default_language) do
+      case ExGram.Config.get(:refraner_bot, :default_language) do
         nil -> []
         language -> [query: [language: language]]
       end

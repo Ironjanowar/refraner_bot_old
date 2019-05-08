@@ -3,16 +3,15 @@ defmodule RefranerBot.Bot do
 
   def bot(), do: @botname
 
-  use Telex.Bot, name: @botname
-  use Telex.Dsl
+  use ExGram.Bot, name: @botname
 
   require Logger
 
-  def handle({:command, "start", _msg}, _name, _) do
-    answer("Hi!")
+  def handle({:command, "start", _msg}, context) do
+    answer(context, "Hi!")
   end
 
-  def handle({:command, "refran", %{from: %{id: user_id, first_name: first_name}}}, _name, _) do
+  def handle({:command, "refran", %{from: %{id: user_id, first_name: first_name}}}, context) do
     {:ok, %{"id" => refran_id} = full_refran} = Refraner.get_random_refran()
     refran_text = RefranerBot.Utils.pretty_refran(full_refran)
 
@@ -20,30 +19,28 @@ defmodule RefranerBot.Bot do
 
     buttons = RefranerBot.Utils.generate(refran_id, [:show, :rate], %{user_id: user_id})
 
-    answer(refran_text, parse_mode: "Markdown", reply_markup: buttons)
+    answer(context, refran_text, parse_mode: "Markdown", reply_markup: buttons)
   end
 
   def handle(
         {:callback_query, %{data: "action:show_refran_info:" <> id, from: %{id: user_id}}},
-        _name,
-        _extra
+        context
       ) do
     {:ok, full_refran} = Refraner.get_refran_by_id(id)
     refran = RefranerBot.Utils.pretty_refran_info(full_refran)
     buttons = RefranerBot.Utils.generate(id, [:hide, :rate], %{user_id: user_id})
-    edit(:inline, refran, parse_mode: "Markdown", reply_markup: buttons)
+    edit(context, :inline, refran, parse_mode: "Markdown", reply_markup: buttons)
   end
 
   def handle(
         {:callback_query, %{data: "action:hide_refran_info:" <> id, from: %{id: user_id}}},
-        _name,
-        _extra
+        context
       ) do
     {:ok, full_refran} = Refraner.get_refran_by_id(id)
     refran_text = RefranerBot.Utils.pretty_refran(full_refran)
     buttons = RefranerBot.Utils.generate(id, [:show, :rate], %{user_id: user_id})
 
-    edit(:inline, refran_text, parse_mode: "Markdown", reply_markup: buttons)
+    edit(context, :inline, refran_text, parse_mode: "Markdown", reply_markup: buttons)
   end
 
   def handle(
@@ -51,11 +48,9 @@ defmodule RefranerBot.Bot do
          %{
            id: cb_id,
            data: "rate_refran:" <> data,
-           from: %{id: user_id},
-           message: %{text: message_text}
+           from: %{id: user_id}
          }},
-        _name,
-        _extra
+        context
       ) do
     [rate, id] = String.split(data, ":")
 
@@ -63,6 +58,6 @@ defmodule RefranerBot.Bot do
 
     Refraner.add_vote(user_id, id, rate)
 
-    answer_callback(cb_id, text: "You voted #{rate}!")
+    answer_callback(context, cb_id, text: "You voted #{rate}!")
   end
 end
