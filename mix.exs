@@ -22,7 +22,7 @@ defmodule RefranerBot.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:telex, git: "https://github.com/rockneurotiko/telex.git", tag: "0.4.0"},
+      {:ex_gram, "~> 0.6.0"},
       {:sqlite_ecto2, "~> 2.2"},
       {:tesla, "1.0.0-beta.1"},
       {:jason, ">= 1.0.0"}

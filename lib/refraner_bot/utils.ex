@@ -75,7 +75,7 @@ defmodule RefranerBot.Utils do
     buttons =
       Enum.map(raw_buttons, fn raw_button -> get_button(refran_id, raw_button, extras) end)
 
-    Telex.Dsl.create_inline(buttons)
+    ExGram.Dsl.create_inline(buttons)
   end
 
   defp get_button(refran_id, :hide, _extras),
