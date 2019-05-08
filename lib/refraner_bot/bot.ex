@@ -7,6 +7,8 @@ defmodule RefranerBot.Bot do
 
   require Logger
 
+  middleware(ExGram.Middleware.IgnoreUsername)
+
   def handle({:command, "start", _msg}, context) do
     answer(context, "Hi!")
   end
