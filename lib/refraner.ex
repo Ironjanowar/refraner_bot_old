@@ -10,14 +10,14 @@ defmodule Refraner do
 
   require Logger
 
-  def get_refranes(count \\ 1) do
+  def get_refranes(params \\ []) do
     language =
       case ExGram.Config.get(:refraner_bot, :default_language) do
         nil -> []
         language -> [language: language]
       end
 
-    options = [query: [count: count] ++ language]
+    options = [query: params ++ language]
 
     case get("/api/refranes", options) do
       {:ok, %{body: refran, status: 200}} ->

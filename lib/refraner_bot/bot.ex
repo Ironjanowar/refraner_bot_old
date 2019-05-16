@@ -10,7 +10,13 @@ defmodule RefranerBot.Bot do
   middleware(ExGram.Middleware.IgnoreUsername)
 
   def handle({:inline_query, %{query: ""}}, context) do
-    {:ok, refranes} = Refraner.get_refranes(10)
+    {:ok, refranes} = Refraner.get_refranes(count: 10)
+    articles = Enum.map(refranes, &RefranerBot.Inline.create_article/1)
+    answer_inline_query(context, articles)
+  end
+
+  def handle({:inline_query, %{query: search}}, context) do
+    {:ok, refranes} = Refraner.get_refranes(count: 10, search: search)
     articles = Enum.map(refranes, &RefranerBot.Inline.create_article/1)
     answer_inline_query(context, articles)
   end
