@@ -10,14 +10,16 @@ defmodule Refraner do
 
   require Logger
 
-  def get_random_refran() do
-    options =
+  def get_refranes(count \\ 1) do
+    language =
       case ExGram.Config.get(:refraner_bot, :default_language) do
         nil -> []
-        language -> [query: [language: language]]
+        language -> [language: language]
       end
 
-    case get("/api/refran/random", options) do
+    options = [query: [count: count] ++ language]
+
+    case get("/api/refranes", options) do
       {:ok, %{body: refran, status: 200}} ->
         {:ok, refran}
 
@@ -28,7 +30,7 @@ defmodule Refraner do
   end
 
   def get_refran_by_id(refran_id) do
-    case get("/api/refran/#{refran_id}") do
+    case get("/api/refranes/#{refran_id}") do
       {:ok, %{body: refran, status: 200}} ->
         {:ok, refran}
 
@@ -45,7 +47,7 @@ defmodule Refraner do
     full_vote = %{tg_user_id: tg_user_id, vote: vote, refran_id: refran_id}
     req_body = %{tg_user_id: tg_user_id, vote: vote}
 
-    case post("/api/refran/#{refran_id}/vote", req_body) do
+    case post("/api/refranes/#{refran_id}/vote", req_body) do
       {:ok, %{status: 201}} ->
         {:ok, full_vote}
 
@@ -60,7 +62,7 @@ defmodule Refraner do
   end
 
   def get_user_vote(user_id, refran_id) do
-    case get("/api/refran/#{refran_id}/vote/user/#{user_id}") do
+    case get("/api/refranes/#{refran_id}/vote/user/#{user_id}") do
       {:ok, %{status: 200, body: vote}} ->
         {:ok, vote}
 

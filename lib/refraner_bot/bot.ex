@@ -9,38 +9,44 @@ defmodule RefranerBot.Bot do
 
   middleware(ExGram.Middleware.IgnoreUsername)
 
+  def handle({:inline_query, %{query: ""}}, context) do
+    {:ok, refranes} = Refraner.get_refranes(10)
+    articles = Enum.map(refranes, &RefranerBot.Inline.create_article/1)
+    answer_inline_query(context, articles)
+  end
+
   def handle({:command, "start", _msg}, context) do
     answer(context, "Hi!")
   end
 
   def handle({:command, "refran", %{from: %{id: user_id, first_name: first_name}}}, context) do
-    {:ok, %{"id" => refran_id} = full_refran} = Refraner.get_random_refran()
+    {:ok, [%{"id" => refran_id} = full_refran]} = Refraner.get_refranes()
     refran_text = RefranerBot.Utils.pretty_refran(full_refran)
 
     Logger.info("Sending refran #{refran_id} to #{first_name} [#{user_id}]")
 
-    buttons = RefranerBot.Utils.generate(refran_id, [:show, :rate], %{user_id: user_id})
+    buttons = RefranerBot.Utils.generate(refran_id, [:show, :rate], %{})
 
     answer(context, refran_text, parse_mode: "Markdown", reply_markup: buttons)
   end
 
   def handle(
-        {:callback_query, %{data: "action:show_refran_info:" <> id, from: %{id: user_id}}},
+        {:callback_query, %{data: "action:show_refran_info:" <> id}},
         context
       ) do
     {:ok, full_refran} = Refraner.get_refran_by_id(id)
     refran = RefranerBot.Utils.pretty_refran_info(full_refran)
-    buttons = RefranerBot.Utils.generate(id, [:hide, :rate], %{user_id: user_id})
+    buttons = RefranerBot.Utils.generate(id, [:hide, :rate], %{})
     edit(context, :inline, refran, parse_mode: "Markdown", reply_markup: buttons)
   end
 
   def handle(
-        {:callback_query, %{data: "action:hide_refran_info:" <> id, from: %{id: user_id}}},
+        {:callback_query, %{data: "action:hide_refran_info:" <> id}},
         context
       ) do
     {:ok, full_refran} = Refraner.get_refran_by_id(id)
     refran_text = RefranerBot.Utils.pretty_refran(full_refran)
-    buttons = RefranerBot.Utils.generate(id, [:show, :rate], %{user_id: user_id})
+    buttons = RefranerBot.Utils.generate(id, [:show, :rate], %{})
 
     edit(context, :inline, refran_text, parse_mode: "Markdown", reply_markup: buttons)
   end

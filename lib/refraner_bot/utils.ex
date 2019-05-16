@@ -52,10 +52,8 @@ defmodule RefranerBot.Utils do
     string
   end
 
-  def generate_rating_row(refran_id, user_id) do
+  def generate_rating_row(refran_id) do
     refran_id = id_to_string(refran_id)
-
-    Logger.info("Generating basic rate keyboard for user #{user_id} and refran #{refran_id}")
     basic_rate_keyboard(refran_id)
   end
 
@@ -81,8 +79,8 @@ defmodule RefranerBot.Utils do
   defp get_button(refran_id, :hide, _extras),
     do: [[text: "Hide info", callback_data: "action:hide_refran_info:" <> refran_id]]
 
-  defp get_button(refran_id, :rate, %{user_id: user_id}),
-    do: generate_rating_row(refran_id, user_id)
+  defp get_button(refran_id, :rate, _extras),
+    do: generate_rating_row(refran_id)
 
   defp get_button(refran_id, :show, _extras),
     do: [[text: "Show info", callback_data: "action:show_refran_info:" <> refran_id]]
