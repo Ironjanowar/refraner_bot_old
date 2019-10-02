@@ -22,10 +22,11 @@ defmodule RefranerBot.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:ex_gram, "~> 0.6.0"},
-      {:sqlite_ecto2, "~> 2.2"},
-      {:tesla, "1.0.0-beta.1"},
-      {:jason, ">= 1.0.0"}
+      {:ex_gram, "~> 0.8"},
+      {:sqlite_ecto2, "~> 2.4"},
+      {:tesla, "~> 1.2"},
+      {:gun, "~> 1.3"},
+      {:jason, "~> 1.1"}
     ]
   end
 end
