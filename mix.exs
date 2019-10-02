@@ -26,7 +26,8 @@ defmodule RefranerBot.MixProject do
       {:sqlite_ecto2, "~> 2.4"},
       {:tesla, "~> 1.2"},
       {:gun, "~> 1.3"},
-      {:jason, "~> 1.1"}
+      {:jason, "~> 1.1"},
+      {:logger_file_backend, "0.0.11"}
     ]
   end
 end
